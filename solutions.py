@@ -7,6 +7,13 @@ class ListNode:
         self.val = val
         self.next = next
 
+    @staticmethod
+    def list_to_node(l: list):
+        l.reverse()
+        for i, v in enumerate(l):
+            l[i] = ListNode(val=v, next=l[i - 1] if i - 1 >= 0 else None)
+        return l[-1]
+
 
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -109,10 +116,10 @@ class Solution:
             return maxpalidrom
 
     def FasterPalidrom(s: str) -> str:
-        '''
+        """
         good solution(not mine)
-        :return: 
-        '''
+        :return:
+        """
         m = ''  # Memory to remember a palindrome
         for i in range(len(s)):  # i = start, O = n
             for j in range(len(s), i, -1):  # j = end, O = n^2
@@ -984,8 +991,8 @@ class Solution:
     def mySqrt(self, x: int) -> int:  # Not done
         l, r = 0, x
         while l <= r:
-            mid = l + (r-l)//2
-            if mid * mid <= x < (mid+1)*(mid+1):
+            mid = l + (r - l) // 2
+            if mid * mid <= x < (mid + 1) * (mid + 1):
                 return mid
             elif x < mid * mid:
                 r = mid - 1
@@ -993,24 +1000,103 @@ class Solution:
                 l = mid + 1
 
     def climbStairs(self, n: int) -> int:
-        '''
+        """
         You are climbing a staircase. It takes n steps to reach the top.
         Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
         :param n:
         :return:
-        '''
+        """
         fib1, fib2 = 1, 1
         for _ in range(n):
             fib2, fib1 = fib1 + fib2, fib2
         return fib1
 
+    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        cursor = head
+        while cursor and cursor.next:
+            if cursor.val == cursor.next.val:
+                cursor.next = cursor.next.next
+            else:
+                cursor = cursor.next
+        return head
 
+    def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
+        """
+        Do not return anything, modify nums1 in-place instead.
+        O(m + n)
+        """
+        while n > 0:
+            if m <= 0 or nums2[n - 1] >= nums1[m - 1]:
+                nums1[m + n - 1] = nums2[n - 1]
+                n -= 1
+            else:
+                nums1[m + n - 1] = nums1[m - 1]
+                m -= 1
 
+    def singleNumber(self, nums: List[int]) -> int:
+        """
+        Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.
+        You must implement a solution with a linear runtime complexity and use only constant extra space.
+        """
+        res = 0
+        for num in nums:
+            res ^= num
+        return res
 
+    def findDisappearedNumbers(self, nums: List[int]) -> List[int]:  # faster than 99.73%
+        """
+        Given an array nums of n integers where nums[i] is in the range [1, n],
+        return an array of all the integers in the range [1, n] that do not appear in nums.
+        """
+        return list(set(list(range(1, len(nums) + 1))) - set(nums))
+
+    def hammingDistance(self, x: int, y: int) -> int:
+        """
+        The Hamming distance between two integers is the number of positions at which the corresponding
+        bits are different.Given two integers x and y, return the Hamming distance between them.
+        """
+        xb, yb = f'{x:032b}', f'{y:032b}'
+        return sum(i != j for i, j in zip(xb, yb))
+
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        """
+        Given the roots of two binary trees p and q, write a function to check if they are the same or not.
+        Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.
+        """
+        if not p and not q:
+            return True
+        if not p or not q:
+            return False
+        if p.val != q.val:
+            return False
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+
+    def numIslands(self, grid: List[List[str]]) -> int:
+        """
+        Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water),
+        return the number of islands. An island is surrounded by water and is formed by connecting
+        adjacent lands horizontally or vertically. You may assume all four edges of the grid are all
+        surrounded by water.
+        """
+
+        def dfs(grid, i, j):
+            if i < 0 or j < 0 or i >= len(grid) or j >= len(grid[i]) or grid[i][j] == '0':
+                return
+
+            grid[i][j] = '0'
+            dfs(grid, i - 1, j)  # up
+            dfs(grid, i + 1, j)  # down
+            dfs(grid, i, j - 1)  # left
+            dfs(grid, i, j + 1)  # right
+
+        res = 0
+        for i, iv in enumerate(grid):
+            for j, jv in enumerate(grid[i]):
+                if grid[i][j] == '1':
+                    res += 1
+                    dfs(grid, i, j)
+        return res
 
 
 if __name__ == '__main__':
-
     s = Solution()
-
-    print(s.climbStairs(1))
