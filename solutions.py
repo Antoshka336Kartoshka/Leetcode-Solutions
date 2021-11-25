@@ -1,5 +1,7 @@
 from typing import Optional, List
 from random import randint
+import math
+import collections
 
 
 class ListNode:
@@ -23,6 +25,11 @@ class TreeNode:
 
 
 class Solution:
+
+    def __init__(self):
+        self.score1 = 0
+        self.score2 = 0
+
     def twoSum(self, nums: list, target: int) -> list:
         for num in range(len(nums)):
             if target - nums[num] in nums:
@@ -1097,6 +1104,71 @@ class Solution:
                     dfs(grid, i, j)
         return res
 
+    def maxDepth(self, root: Optional[TreeNode], res=0) -> int:
+        """
+        Given the root of a binary tree, return its maximum depth. A binary tree's maximum depth is the number
+        of nodes along the longest path from the root node down to the farthest leaf node.
+        """
+        if not root:
+            return res
+        return max(self.maxDepth(root.left, res + 1), self.maxDepth(root.right, res + 1))
+
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        """
+        Given a binary tree, find its minimum depth. The minimum depth is the number of nodes along
+        the shortest path from the root node down to the nearest leaf node.
+        Note: A leaf is a node with no children.
+        """
+        if not root:
+            return 0
+        queue = collections.deque([(root, 1)])  # element with it's depth level
+        while queue:
+            node, level = queue.popleft()
+            if node:
+                if not node.left and not node.right:
+                    return level
+                else:
+                    queue.append((node.left, level + 1))
+                    queue.append((node.right, level + 1))
+
+    def fib(self, n: int) -> int:
+        """
+        The Fibonacci numbers, commonly denoted F(n) form a sequence, called the Fibonacci sequence,
+        such that each number is the sum of the two preceding ones, starting from 0 and 1. That is,
+        F(0) = 0, F(1) = 1
+        F(n) = F(n - 1) + F(n - 2), for n > 1.
+        Given n, calculate F(n).
+        """
+        if n > 1:
+            return self.fib(n - 1) + self.fib(n - 2)
+        elif n == 1:
+            return 1
+        else:
+            return 0
+
+    def reverseString(self, s: List[str]) -> None:  # O(1)
+        """
+        Write a function that reverses a string. The input string is given as an array of characters s.
+        You must do this by modifying the input array in-place with O(1) extra memory.
+        """
+        lcur = 0
+        rcur = len(s) - 1
+        while lcur <= rcur:
+            print(lcur, rcur)
+            s[lcur], s[rcur] = s[rcur], s[lcur]
+            lcur += 1
+            rcur -= 1
+
+    def isPowerOfFour(self, n: int) -> bool:
+        """
+        Given an integer n, return true if it is a power of four. Otherwise, return false.
+        An integer n is a power of four, if there exists an integer x such that n == 4^x.
+        """
+        return n > 0 and math.log(n, 4).is_integer()
+
 
 if __name__ == '__main__':
+    '''
+    
+    '''
     s = Solution()
