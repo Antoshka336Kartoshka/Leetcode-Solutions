@@ -9,6 +9,9 @@ class ListNode:
         self.val = val
         self.next = next
 
+    def __repr__(self):
+        return str(self.val)
+
     @staticmethod
     def list_to_node(l: list):
         l.reverse()
@@ -22,6 +25,20 @@ class TreeNode:
         self.val = val
         self.left = left
         self.right = right
+
+    def __repr__(self):
+        return str(self.val)
+
+    @staticmethod
+    def creatBTree(data, index):
+        pNode = None
+        if index < len(data):
+            if data[index] == None:
+                return
+            pNode = TreeNode(data[index])
+            pNode.left = TreeNode.creatBTree(data, 2 * index + 1)  # [1, 3, 7, 15, ...]
+            pNode.right = TreeNode.creatBTree(data, 2 * index + 2)  # [2, 5, 12, 25, ...]
+        return pNode
 
 
 class Solution:
@@ -1166,9 +1183,216 @@ class Solution:
         """
         return n > 0 and math.log(n, 4).is_integer()
 
+    def findPeakElement(self, nums: List[int]) -> int:
+        """
+        A peak element is an element that is strictly greater than its neighbors.
+        Given an integer array nums, find a peak element, and return its index.
+        If the array contains multiple peaks, return the index to any of the peaks.
+        You may imagine that nums[-1] = nums[n] = -∞.
+        You must write an algorithm that runs in O(log n) time.
+        """
+        left, right = 0, len(nums) - 1
+        while left < right:
+            mid = left + (right - left) // 2
+            if nums[mid] < nums[mid + 1]:
+                left = mid + 1  # go to the right
+            else:
+                right = mid  # go to the left
+        return left
+
+    def findPeakGrid(self, mat: List[List[int]]) -> List[int]:
+        """
+        A peak element in a 2D grid is an element that is strictly greater than all of its
+        adjacent neighbors to the left, right, top, and bottom. Given a 0-indexed m x n matrix mat
+        where no two adjacent cells are equal, find any peak element mat[i][j] and return the length 2 array [i,j].
+        You may assume that the entire matrix is surrounded by an outer perimeter with the value -1 in each cell.
+        You must write an algorithm that runs in O(m log(n)) or O(n log(m)) time.
+        Attempt
+        • Pick middle column j = m/2
+        • Find global maximum on column j at (i, j)
+        • Compare (i, j − 1),(i, j),(i, j + 1)
+        • Pick left columns of (i, j − 1) > (i, j)
+        • Similarly for right
+        • (i, j) is a 2D-peak if neither condition holds ← WHY?
+        • Solve the new problem with half the number of columns.
+        • When you have a single column, find global maximum and you‘re done.
+        """
+
+        def find_max_at_column(mat, column):  # if do binary search here it would work?
+            m = i = j = 0
+            for row in range(len(mat)):
+                if mat[row][column] > m:
+                    m = mat[row][column]
+                    i, j = row, column
+            return i, j
+
+        midcolumn = len(mat[0]) // 2
+        i, j = find_max_at_column(mat, midcolumn)
+        while mat:
+            if j > 0 and mat[i][j - 1] > mat[i][j]:
+                j -= 1
+            elif j < len(mat[i]) - 1 and mat[i][j + 1] > mat[i][j]:
+                j += 1
+            else:
+                i, j = find_max_at_column(mat, j)
+                return [i, j]
+
+    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:  # Merge sort (could be quicksort too!)
+        """
+        Given the head of a linked list, return the list after sorting it in ascending order.
+        """
+
+        def merge(left, right):
+            temp = dummy = ListNode()
+            while left and right:
+                if left.val < right.val:
+                    temp.next = left
+                    left = left.next
+                else:
+                    temp.next = right
+                    right = right.next
+                temp = temp.next
+            if left:
+                temp.next = left
+            if right:
+                temp.next = right
+            return dummy.next
+
+        def getMid(head):
+            """
+            return mid element of a ListNode
+            """
+            slow, fast = head, head.next
+            while fast and fast.next:
+                slow, fast = slow.next, fast.next.next
+            return slow
+
+        if not head or not head.next:
+            return head
+
+        # Divide list in a half
+        left = head
+        right = getMid(head)
+        temp = right.next
+        right.next = None
+        right = temp
+
+        left = self.sortList(left)
+        right = self.sortList(right)
+        return merge(left, right)
+
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        """
+        Given the root of a binary tree, check whether it is a mirror of itself
+        (i.e., symmetric around its center).
+        """
+
+        def isSymetricNodes(l, r):
+            if not l and not r:
+                return True
+            if not l or not r:
+                return False
+            if l.val != r.val:
+                return False
+            return isSymetricNodes(l.left, r.right) and isSymetricNodes(l.right, r.left)
+
+        return isSymetricNodes(root.left, root.right)
+
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        """
+        Given the root of a binary tree, return the level order traversal of its nodes' values.
+        (i.e., from left to right, level by level).
+        """
+        queue = collections.deque([(root, 0)])
+        answer = []
+        while queue:
+            node, level = queue.popleft()
+            if node:
+                if level > len(answer) - 1:
+                    answer.append([node.val])
+                else:
+                    answer[level].append(node.val)
+                if node.left: queue.append((node.left, level + 1))
+                if node.right: queue.append((node.right, level + 1))
+        return answer
+
+    def levelOrderBottom(self, root: Optional[TreeNode]) -> List[List[int]]:
+        """
+        Given the root of a binary tree, return the bottom-up level order traversal of its nodes' values.
+        (i.e., from left to right, level by level from leaf to root).
+        """
+        queue = collections.deque([(root, 0)])
+        answer = []
+        while queue:
+            node, level = queue.popleft()
+            if node:
+                if level > len(answer) - 1:
+                    answer.append([node.val])
+                else:
+                    answer[level].append(node.val)
+                if node.left: queue.append((node.left, level + 1))
+                if node.right: queue.append((node.right, level + 1))
+        return list(reversed(answer))
+
+    def averageOfLevels(self, root: Optional[TreeNode]) -> List[float]:
+        """
+        Given the root of a binary tree, return the average value of the nodes on each level in the form of an array.
+        Answers within 10-5 of the actual answer will be accepted.
+        """
+        queue = collections.deque([(root, 0)])
+        answer = []
+        while queue:
+            node, level = queue.popleft()
+            if node:
+                if level > len(answer) - 1:
+                    answer.append([node.val])
+                else:
+                    answer[level].append(node.val)
+                if node.left: queue.append((node.left, level + 1))
+                if node.right: queue.append((node.right, level + 1))
+        for i, v in enumerate(answer):
+            answer[i] = sum(v) / len(v)
+        return answer
+
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Given an m x n matrix board containing 'X' and 'O', capture all regions
+        that are 4-directionally surrounded by 'X'.
+        A region is captured by flipping all 'O's into 'X's in that surrounded region.
+        """
+        def dfs(board, i, j, remove=False):  # if remove=True the erase 'O' else check if surrounded
+            if i < 0 or j < 0 or i > len(board) - 1 or j > len(board) - 1 or board[i][j] == 'X':
+                return
+
+            board[i][j] = 'X'
+
+            dfs(board, i - 1, j)  # up
+            dfs(board, i + 1, j)  # down
+            dfs(board, i, j - 1)  # left
+            dfs(board, i, j + 1)  # right
+
+        for i in range(len(board)):
+            for j in range(len(board[i])):
+                if board[i][j] == 'O':
+                    dfs(board, i, j)
+
 
 if __name__ == '__main__':
     '''
-    
+    Input: board = [["X","X","X","X"],
+                    ["X","O","O","X"],
+                    ["X","X","O","X"],
+                    ["X","O","X","X"]]
+                    
+    Output: [   ["X","X","X","X"],
+                ["X","X","X","X"],
+                ["X","X","X","X"],
+                ["X","O","X","X"]]
     '''
+    board = [["X", "X", "X", "X"],
+             ["X", "O", "O", "X"],
+             ["X", "X", "O", "X"],
+             ["X", "O", "X", "X"]]
     s = Solution()
+    print(s.solve(board))
+    print(board)
