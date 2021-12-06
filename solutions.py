@@ -2,6 +2,7 @@ from typing import Optional, List
 from random import randint
 import math
 import collections
+import copy
 
 
 class ListNode:
@@ -1360,39 +1361,48 @@ class Solution:
         that are 4-directionally surrounded by 'X'.
         A region is captured by flipping all 'O's into 'X's in that surrounded region.
         """
-        def dfs(board, i, j, remove=False):  # if remove=True the erase 'O' else check if surrounded
-            if i < 0 or j < 0 or i > len(board) - 1 or j > len(board) - 1 or board[i][j] == 'X':
-                return
 
-            board[i][j] = 'X'
+        def dfs(board, i, j):
+            if 0 <= i < len(board) and 0 <= j < len(board[i]) and board[i][j] == 'O':
+                board[i][j] = 'N'
+                dfs(board, i - 1, j)  # up
+                dfs(board, i + 1, j)  # down
+                dfs(board, i, j - 1)  # left
+                dfs(board, i, j + 1)  # right
 
-            dfs(board, i - 1, j)  # up
-            dfs(board, i + 1, j)  # down
-            dfs(board, i, j - 1)  # left
-            dfs(board, i, j + 1)  # right
-
+        for i in range(len(board) - 1):
+            dfs(board, i, 0)
+            dfs(board, i, len(board[i]) - 1)
+        for j in range(len(board[0])):
+            dfs(board, 0, j)
+            dfs(board, len(board) - 1, j)
         for i in range(len(board)):
             for j in range(len(board[i])):
                 if board[i][j] == 'O':
-                    dfs(board, i, j)
+                    board[i][j] = 'X'
+                if board[i][j] == 'N':
+                    board[i][j] = 'O'
+
+    def uniquePaths(self, m: int, n: int) -> int:
+        """
+        A robot is located at the top-left corner of a m x n grid.
+        The robot can only move either down or right at any point in time. The robot is trying to reach
+        the bottom-right corner of the grid.
+        How many possible unique paths are there?
+        m - rows
+        n - columns
+        """
+
+        grid = [[1] * n] * m
+        for i in range(1, m):
+            for j in range(1, n):
+                grid[i][j] = grid[i - 1][j] + grid[i][j - 1]
+        return grid[m - 1][n - 1]
 
 
 if __name__ == '__main__':
     '''
-    Input: board = [["X","X","X","X"],
-                    ["X","O","O","X"],
-                    ["X","X","O","X"],
-                    ["X","O","X","X"]]
-                    
-    Output: [   ["X","X","X","X"],
-                ["X","X","X","X"],
-                ["X","X","X","X"],
-                ["X","O","X","X"]]
+
     '''
-    board = [["X", "X", "X", "X"],
-             ["X", "O", "O", "X"],
-             ["X", "X", "O", "X"],
-             ["X", "O", "X", "X"]]
     s = Solution()
-    print(s.solve(board))
-    print(board)
+    print(s.uniquePaths(3, 7))
