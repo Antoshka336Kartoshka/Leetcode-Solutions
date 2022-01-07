@@ -1,1 +1,4 @@
-!/test_solutions.py
+test_solutions.py
+pytest.ini
+__pycache__/
+.pre-commit-config.yaml

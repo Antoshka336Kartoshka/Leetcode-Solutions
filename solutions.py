@@ -2,7 +2,6 @@ from typing import Optional, List
 from random import randint
 import math
 import collections
-import copy
 
 
 class ListNode:
@@ -15,6 +14,8 @@ class ListNode:
 
     @staticmethod
     def list_to_node(l: list):
+        if not l:
+            return ListNode()
         l.reverse()
         for i, v in enumerate(l):
             l[i] = ListNode(val=v, next=l[i - 1] if i - 1 >= 0 else None)
@@ -37,8 +38,10 @@ class TreeNode:
             if data[index] == None:
                 return
             pNode = TreeNode(data[index])
-            pNode.left = TreeNode.creatBTree(data, 2 * index + 1)  # [1, 3, 7, 15, ...]
-            pNode.right = TreeNode.creatBTree(data, 2 * index + 2)  # [2, 5, 12, 25, ...]
+            pNode.left = TreeNode.creatBTree(
+                data, 2 * index + 1)  # [1, 3, 7, 15, ...]
+            pNode.right = TreeNode.creatBTree(
+                data, 2 * index + 2)  # [2, 5, 12, 25, ...]
         return pNode
 
 
@@ -65,7 +68,8 @@ class Solution:
         previous_node = None
         first_node = None
         while current_node_l1 or current_node_l2 or next_num:
-            s = (current_node_l1.val if current_node_l1 else 0) + (current_node_l2.val if current_node_l2 else 0)
+            s = (current_node_l1.val if current_node_l1 else 0) + \
+                (current_node_l2.val if current_node_l2 else 0)
             print('S = ', s, 'N_N = ', next_num)
             if next_num:
                 s += next_num
@@ -223,7 +227,8 @@ class Solution:
 
     def intToRoman(self, num):
         values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
-        numerals = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+        numerals = ["M", "CM", "D", "CD", "C", "XC",
+                    "L", "XL", "X", "IX", "V", "IV", "I"]
         answer = ''
         for n, v in enumerate(values):
             print(v, '--', num // v)
@@ -277,7 +282,8 @@ class Solution:
         result = set()
         for a in range(len(nums)):
             for b in range(a + 1, len(nums)):
-                c = 0 - (nums[a] + nums[b])  # c = 0 - (a + b); a + b + c = 0 -> a + b = -c
+                # c = 0 - (a + b); a + b + c = 0 -> a + b = -c
+                c = 0 - (nums[a] + nums[b])
                 if c in nums:
                     ci = nums.index(c)
                     if ci != a and ci != b:
@@ -488,7 +494,6 @@ class Solution:
         start = 0
         end = len(swords)
         answer = []
-        l = []
         while end <= len(s):
             if sorted(s[start:end]) == sorted(swords) and sorted(get_list(s[start:end], lenword)) == sorted(words):
                 answer.append(start)
@@ -542,7 +547,7 @@ class Solution:
                 return False
             board[row][col] = '*'
             res = find(board, word, row + 1, col, i + 1) or find(board, word, row - 1, col, i + 1) \
-                  or find(board, word, row, col + 1, i + 1) or find(board, word, row, col - 1, i + 1)
+                or find(board, word, row, col + 1, i + 1) or find(board, word, row, col - 1, i + 1)
             board[row][col] = word[i]
             return res
 
@@ -671,7 +676,6 @@ class Solution:
         left = []
         mid = []
         right = []
-        columns = []
         for i, line in enumerate(board):
             if not validate(line):
                 return False
@@ -942,8 +946,10 @@ class Solution:
             else:  # рекурсивный случай
                 pivot = nums[
                     0]  # опорный элемент (для ускорения работы лучше выбирать рандомный элемент вместо первого)
-                less = [i for i in nums[1:] if str(pivot) + str(i) > str(i) + str(pivot)]
-                greater = [i for i in nums[1:] if str(pivot) + str(i) <= str(i) + str(pivot)]
+                less = [i for i in nums[1:] if str(
+                    pivot) + str(i) > str(i) + str(pivot)]
+                greater = [i for i in nums[1:] if str(
+                    pivot) + str(i) <= str(i) + str(pivot)]
                 return _quicksort(less) + [pivot] + _quicksort(greater)
 
         result = ''.join(map(str, list(reversed(_quicksort(nums)))))
@@ -981,9 +987,12 @@ class Solution:
     @staticmethod
     def guess(n: int) -> int:
         my_number = randint(1, 10000)
-        if n < my_number: return 1
-        if n > my_number: return -1
-        if n == my_number: return 0
+        if n < my_number:
+            return 1
+        if n > my_number:
+            return -1
+        if n == my_number:
+            return 0
 
     def guessNumber(self, n: int) -> int:
         l, r = 0, n
@@ -1011,7 +1020,8 @@ class Solution:
         return len(s.split()[-1])
 
     def plusOne(self, digits: List[int]) -> List[int]:
-        return list(map(int, list(str(int(''.join(map(str, digits))) + 1))))  # Bad way of coding
+        # Bad way of coding
+        return list(map(int, list(str(int(''.join(map(str, digits))) + 1))))
 
     def mySqrt(self, x: int) -> int:  # Not done
         l, r = 0, x
@@ -1068,7 +1078,8 @@ class Solution:
             res ^= num
         return res
 
-    def findDisappearedNumbers(self, nums: List[int]) -> List[int]:  # faster than 99.73%
+    # faster than 99.73%
+    def findDisappearedNumbers(self, nums: List[int]) -> List[int]:
         """
         Given an array nums of n integers where nums[i] is in the range [1, n],
         return an array of all the integers in the range [1, n] that do not appear in nums.
@@ -1218,7 +1229,8 @@ class Solution:
         • When you have a single column, find global maximum and you‘re done.
         """
 
-        def find_max_at_column(mat, column):  # if do binary search here it would work?
+        # if do binary search here it would work?
+        def find_max_at_column(mat, column):
             m = i = j = 0
             for row in range(len(mat)):
                 if mat[row][column] > m:
@@ -1237,7 +1249,8 @@ class Solution:
                 i, j = find_max_at_column(mat, j)
                 return [i, j]
 
-    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:  # Merge sort (could be quicksort too!)
+    # Merge sort (could be quicksort too!)
+    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
         """
         Given the head of a linked list, return the list after sorting it in ascending order.
         """
@@ -1312,8 +1325,10 @@ class Solution:
                     answer.append([node.val])
                 else:
                     answer[level].append(node.val)
-                if node.left: queue.append((node.left, level + 1))
-                if node.right: queue.append((node.right, level + 1))
+                if node.left:
+                    queue.append((node.left, level + 1))
+                if node.right:
+                    queue.append((node.right, level + 1))
         return answer
 
     def levelOrderBottom(self, root: Optional[TreeNode]) -> List[List[int]]:
@@ -1330,8 +1345,10 @@ class Solution:
                     answer.append([node.val])
                 else:
                     answer[level].append(node.val)
-                if node.left: queue.append((node.left, level + 1))
-                if node.right: queue.append((node.right, level + 1))
+                if node.left:
+                    queue.append((node.left, level + 1))
+                if node.right:
+                    queue.append((node.right, level + 1))
         return list(reversed(answer))
 
     def averageOfLevels(self, root: Optional[TreeNode]) -> List[float]:
@@ -1348,8 +1365,10 @@ class Solution:
                     answer.append([node.val])
                 else:
                     answer[level].append(node.val)
-                if node.left: queue.append((node.left, level + 1))
-                if node.right: queue.append((node.right, level + 1))
+                if node.left:
+                    queue.append((node.left, level + 1))
+                if node.right:
+                    queue.append((node.right, level + 1))
         for i, v in enumerate(answer):
             answer[i] = sum(v) / len(v)
         return answer
@@ -1415,6 +1434,31 @@ class Solution:
 
         ss = (s + s)[1:-1]
         return ss.find(s) != -1
+
+    def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        """
+        Given the head of a linked list, rotate the list to the right by k places.
+        """
+        if not head:
+            return None
+
+        lastElement = head
+        length = 1
+
+        while lastElement.next:
+            lastElement = lastElement.next
+            length += 1
+
+        k = k % length
+        lastElement.next = head
+        tempNode = head
+
+        for _ in range(length - k - 1):
+            tempNode = tempNode.next
+
+        answer = tempNode.next
+        tempNode.next = None
+        return answer
 
 
 if __name__ == '__main__':
