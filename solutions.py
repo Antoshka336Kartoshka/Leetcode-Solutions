@@ -966,11 +966,11 @@ class Solution:
             'D': 500,
             'M': 1000
         }
-        s = s.replace('IV', 'IIII');
+        s = s.replace('IV', 'IIII')
         s = s.replace('IX', 'VIIII')
-        s = s.replace('XL', 'XXXX');
+        s = s.replace('XL', 'XXXX')
         s = s.replace('XC', 'LXXXX')
-        s = s.replace('CD', 'CCCC');
+        s = s.replace('CD', 'CCCC')
         s = s.replace('CM', 'DCCCC')
         count = 0
         print(s)
@@ -1172,7 +1172,6 @@ class Solution:
         lcur = 0
         rcur = len(s) - 1
         while lcur <= rcur:
-            print(lcur, rcur)
             s[lcur], s[rcur] = s[rcur], s[lcur]
             lcur += 1
             rcur -= 1
@@ -1399,10 +1398,27 @@ class Solution:
                 grid[i][j] = grid[i - 1][j] + grid[i][j - 1]
         return grid[m - 1][n - 1]
 
+    def repeatedSubstringPattern(self, s: str) -> bool:
+        """
+        Given a string s, check if it can be constructed by taking a substring
+        of it and appending multiple copies of the substring together.
+        Basic idea:
+        1. First char of input string is first char of repeated substring
+        2. Last char of input string is last char of repeated substring
+        3. Let S1 = S + S (where S in input string)
+        4. Remove 1 and last char of S1. Let this be S2
+        5. If S exists in S2 then return true else false
+        6. Let i be index in S2 where S starts then repeated substring length i + 1 and repeated substring S[0: i+1]
+        """
+        if not s:
+            return False
+
+        ss = (s + s)[1:-1]
+        return ss.find(s) != -1
+
 
 if __name__ == '__main__':
     '''
 
     '''
     s = Solution()
-    print(s.uniquePaths(3, 7))
