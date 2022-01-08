@@ -9,8 +9,17 @@ class ListNode:
         self.val = val
         self.next = next
 
-    def __repr__(self):
-        return str(self.val)
+    def __str__(self) -> str:
+        s = ''
+        cursor = self
+        while cursor:
+            s += f'{cursor.val} -> '
+            cursor = cursor.next
+            if cursor is self:
+                s += f'{self.val}(self)'
+                return s
+        s += 'None'
+        return s
 
     @staticmethod
     def list_to_node(l: list):
@@ -28,11 +37,46 @@ class TreeNode:
         self.left = left
         self.right = right
 
+    def _str(self):
+        """Internal method for ASCII art."""
+        label = str(self.val)
+        if self.left is None:
+            left_lines, left_pos, left_width = [], 0, 0
+        else:
+            left_lines, left_pos, left_width = self.left._str()
+        if self.right is None:
+            right_lines, right_pos, right_width = [], 0, 0
+        else:
+            right_lines, right_pos, right_width = self.right._str()
+        middle = max(right_pos + left_width - left_pos + 1, len(label), 2)
+        pos = left_pos + middle // 2
+        width = left_pos + middle + right_width - right_pos
+        while len(left_lines) < len(right_lines):
+            left_lines.append(' ' * left_width)
+        while len(right_lines) < len(left_lines):
+            right_lines.append(' ' * right_width)
+        if (middle - len(label)) % 2 == 1 and len(label) < middle:
+            label += '.'
+        label = label.center(middle, '.')
+        if label[0] == '.':
+            label = ' ' + label[1:]
+        if label[-1] == '.':
+            label = label[:-1] + ' '
+        lines = [' ' * left_pos + label + ' ' * (right_width - right_pos),
+                 ' ' * left_pos + '/' + ' ' * (middle - 2) +
+                 '\\' + ' ' * (right_width - right_pos)] + \
+            [left_line + ' ' * (width - left_width - right_width) + right_line
+             for left_line, right_line in zip(left_lines, right_lines)]
+        return lines, pos, width
+
+    def __str__(self):
+        return '\n'.join(self._str()[0])
+
     def __repr__(self):
-        return str(self.val)
+        return f"TreeNode({self.val!r}, {self.left!r}, {self.right!r})"
 
     @staticmethod
-    def creatBTree(data, index):
+    def creatBTree(data, index=0):
         pNode = None
         if index < len(data):
             if data[index] == None:
@@ -400,12 +444,6 @@ class Solution:
         if not answer:
             return ListNode().next
         return answer[-1]
-
-    def print_list_node(self, head: ListNode):
-        cursor = head
-        while cursor:
-            print(cursor.val)
-            cursor = cursor.next
 
     def swapPairs(self, head: ListNode) -> ListNode:
         if not head:
@@ -1459,6 +1497,49 @@ class Solution:
         answer = tempNode.next
         tempNode.next = None
         return answer
+
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        """
+        Given the root of a binary tree, return the inorder traversal of its nodes' values.
+        """
+
+        def helper(root: Optional[TreeNode], res: list) -> List[int]:
+            if root is None:
+                return root
+            helper(root.left, res)
+            res.append(root.val)
+            helper(root.right, res)
+            return res
+        return helper(root, [])
+
+    def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+        """
+        Given an integer array nums where the elements are sorted in ascending order,
+        convert it to a height-balanced binary search tree.
+        A height-balanced binary tree is a binary tree in which the depth of the
+        two subtrees of every node never differs by more than one.
+        """
+        def helper(start, end, nums):
+            if start < end:
+                mid = (start + end) // 2
+                root = TreeNode(nums[mid])
+                root.left = helper(start, mid, nums)
+                root.right = helper(mid + 1, end, nums)
+                return root
+
+        return helper(0, len(nums), nums)
+
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        """
+        Given the root of a binary tree and an integer targetSum, return true if the tree
+        has a root-to-leaf path such that adding up all the values along the path equals targetSum.
+        A leaf is a node with no children.
+        """
+        if root is None:
+            return False
+        if root.left is None and root.right is None and targetSum == root.val:
+            return True
+        return self.hasPathSum(root.left, targetSum - root.val) or self.hasPathSum(root.right, targetSum - root.val)
 
 
 if __name__ == '__main__':
