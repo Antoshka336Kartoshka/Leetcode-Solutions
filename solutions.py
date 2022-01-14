@@ -1541,6 +1541,92 @@ class Solution:
             return True
         return self.hasPathSum(root.left, targetSum - root.val) or self.hasPathSum(root.right, targetSum - root.val)
 
+    def generate(self, numRows: int) -> List[List[int]]:
+        """
+        Given an integer numRows, return the first numRows of Pascal's triangle.
+        """
+        triangle = []
+        for i in range(numRows):
+            triangle.append([0] * (i + 1))
+            triangle[i][0] = triangle[i][-1] = 1
+            row = triangle[i]
+            for j in range(len(row) - 1):
+                if row[j] == 0:
+                    row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j]
+        return triangle
+
+    def getRow(self, rowIndex: int) -> List[int]:
+        """
+        Given an integer rowIndex, return the rowIndexth (0-indexed) row of the Pascal's triangle.
+        """
+        triangle = []
+        for i in range(rowIndex + 1):
+            row = []
+            for j in range(i + 1):
+                if j == 0 or j == i:
+                    row.append(1)
+                else:
+                    row.append(triangle[i - 1][j - 1] + triangle[i - 1][j])
+
+            triangle.append(row)
+        return triangle[-1]
+
+    def maxProfit(self, prices: List[int]) -> int:
+        """
+        You are given an array prices where prices[i] is the price of a given stock on the ith day.
+        You want to maximize your profit by choosing a single day to buy one stock and choosing a different
+        day in the future to sell that stock. Return the maximum profit you can achieve from this transaction.
+        If you cannot achieve any profit, return 0.
+        """
+        min_price = float('inf')
+        max_profit = 0
+        for price in prices:
+            min_price = min(min_price, price)
+            max_profit = max(max_profit, price - min_price)
+        return max_profit
+
+    def isPalindromeString(self, s: str) -> bool:
+        """
+        A phrase is a palindrome if, after converting all uppercase letters into lowercase
+        letters and removing all non-alphanumeric characters, it reads the same forward and backward.
+        Alphanumeric characters include letters and numbers.
+        Given a string s, return true if it is a palindrome, or false otherwise.
+        """
+        s = ''.join(ch for ch in s.lower() if ch.isalnum())
+        return True if s == s[::-1] else False
+
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        """
+        Given head, the head of a linked list, determine if the linked list has a cycle in it.
+        There is a cycle in a linked list if there is some node in the list that can be reached
+        again by continuously following the next pointer. Internally, pos is used to denote the
+        index of the node that tail's next pointer is connected to.
+        Note that pos is not passed as a parameter.
+        Return true if there is a cycle in the linked list. Otherwise, return false.
+        """
+        d = dict()
+        while head:
+            if head in d:
+                return True
+            d[head] = 0
+            head = head.next
+        return False
+
+    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        """
+        There is a cycle in a linked list if there is some node in the list that can be reached
+        again by continuously following the next pointer. Internally, pos is used to denote the
+        index of the node that tail's next pointer is connected to (0-indexed).
+        It is -1 if there is no cycle. Note that pos is not passed as a parameter.
+        """
+        d = dict()
+        while head:
+            if head in d:
+                return head
+            d[head] = 0
+            head = head.next
+        return None
+
 
 if __name__ == '__main__':
     '''
