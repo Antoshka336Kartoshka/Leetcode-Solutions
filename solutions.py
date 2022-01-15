@@ -89,6 +89,24 @@ class TreeNode:
         return pNode
 
 
+class MinStack:
+
+    def __init__(self):
+        self.l = []
+
+    def push(self, val: int) -> None:
+        self.l.append(val)
+
+    def pop(self) -> None:
+        self.l.pop()
+
+    def top(self) -> int:
+        return self.l[-1]
+
+    def getMin(self) -> int:
+        return min(self.l)
+
+
 class Solution:
 
     def __init__(self):
@@ -1625,6 +1643,124 @@ class Solution:
                 return head
             d[head] = 0
             head = head.next
+        return None
+
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+        """
+        Given a binary tree, determine if it is height-balanced.
+        For this problem, a height-balanced binary tree is defined as:
+        a binary tree in which the left and right subtrees of every node
+        differ in height by no more than 1.
+        """
+        is_balanced = True
+
+        def helper(root: Optional[TreeNode]):
+            if root is None:
+                return 0
+
+            leftDepth = helper(root.left)
+            rightDepth = helper(root.right)
+
+            height = max(leftDepth, rightDepth) + 1
+
+            if abs(leftDepth - rightDepth) > 1:
+                nonlocal is_balanced
+                is_balanced = False
+
+            return height
+        helper(root)
+        return is_balanced
+
+    def getMinimumDifference(self, root: Optional[TreeNode]) -> int:
+        """
+        Given the root of a Binary Search Tree (BST), return the minimum absolute difference
+        between the values of any two different nodes in the tree.
+
+        Check min value in node
+        go to the left
+        return min value
+        """
+        values = []
+
+        def dfs(node):
+            if node is None:
+                return node
+            dfs(node.left)
+            values.append(node.val)
+            dfs(node.right)
+        dfs(root)
+        return min(b - a for a, b in zip(values, values[1:]))
+
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        """
+        Given the root of a binary tree, return the preorder traversal of its nodes' values.
+        """
+        values = []
+
+        def dfs(node):
+            if node is None:
+                return node
+            values.append(node.val)
+            dfs(node.left)
+            dfs(node.right)
+
+        dfs(root)
+        return values
+
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        """
+        Given the root of a binary tree, return the postorder traversal of its nodes' values.
+        """
+        values = []
+
+        def dfs(node):
+            if node is None:
+                return node
+            dfs(node.left)
+            dfs(node.right)
+            values.append(node.val)
+
+        dfs(root)
+        return values
+
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        """
+        Given the heads of two singly linked-lists headA and headB,
+        return the node at which the two lists intersect.
+        If the two linked lists have no intersection at all, return null.
+        """
+        if headA is None or headB is None:
+            return None
+
+        a = headA
+        b = headB
+
+        while a != b:
+            a = headB if a is None else a.next
+            b = headA if b is None else b.next
+
+        return a
+
+    def twoSum2(self, numbers: List[int], target: int) -> List[int]:
+        """
+        Given a 1-indexed array of integers numbers that is already sorted in non-decreasing order,
+        find two numbers such that they add up to a specific target number. Let these two numbers
+        be numbers[index1] and numbers[index2] where 1 <= index1 < index2 <= numbers.length.
+        Return the indices of the two numbers, index1 and index2,
+        added by one as an integer array [index1, index2] of length 2.
+        """
+        for i in range(len(numbers)):
+            low, hight = i + 1, len(numbers) - 1
+            tmp = target - numbers[i]
+            while low <= hight:
+                mid = low + (hight - low) // 2
+                guess = numbers[mid]
+                if guess == tmp:
+                    return [i + 1, mid + 1]
+                elif tmp > guess:
+                    low = mid + 1
+                else:
+                    hight = mid - 1
         return None
 
 
