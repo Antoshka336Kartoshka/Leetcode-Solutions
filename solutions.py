@@ -1,7 +1,15 @@
 from typing import Optional, List
 from random import randint
+from collections import deque
 import math
-import collections
+
+
+class Node:
+    def __init__(self, val: int = 0, left: 'Node' = None, right: 'Node' = None, next: 'Node' = None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
 
 
 class ListNode:
@@ -1206,7 +1214,7 @@ class Solution:
         """
         if not root:
             return 0
-        queue = collections.deque([(root, 1)])  # element with it's depth level
+        queue = deque([(root, 1)])  # element with it's depth level
         while queue:
             node, level = queue.popleft()
             if node:
@@ -1372,7 +1380,7 @@ class Solution:
         Given the root of a binary tree, return the level order traversal of its nodes' values.
         (i.e., from left to right, level by level).
         """
-        queue = collections.deque([(root, 0)])
+        queue = deque([(root, 0)])
         answer = []
         while queue:
             node, level = queue.popleft()
@@ -1392,7 +1400,7 @@ class Solution:
         Given the root of a binary tree, return the bottom-up level order traversal of its nodes' values.
         (i.e., from left to right, level by level from leaf to root).
         """
-        queue = collections.deque([(root, 0)])
+        queue = deque([(root, 0)])
         answer = []
         while queue:
             node, level = queue.popleft()
@@ -1412,7 +1420,7 @@ class Solution:
         Given the root of a binary tree, return the average value of the nodes on each level in the form of an array.
         Answers within 10-5 of the actual answer will be accepted.
         """
-        queue = collections.deque([(root, 0)])
+        queue = deque([(root, 0)])
         answer = []
         while queue:
             node, level = queue.popleft()
@@ -1763,9 +1771,104 @@ class Solution:
                     hight = mid - 1
         return None
 
+    def invertTreeBFS(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        """
+        Given the root of a binary tree, invert the tree, and return its root.
+        """
+        queue = deque([root])
+        visited = []
+
+        while queue:
+            node = queue.popleft()
+            if node and node not in visited:
+                visited.append(node)
+                node.left, node.right = node.right, node.left  # invert node
+                queue += [node.left, node.right]
+
+        return root
+
+    def invertTreeDFS(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        """
+        Given the root of a binary tree, invert the tree, and return its root.
+        """
+        if root is None:
+            return root
+
+        root.left, root.right = root.right, root.left  # invert node
+        self.invertTreeDFS(root.left)
+        self.invertTreeDFS(root.right)
+
+        return root
+
+    def connect(self, root: Optional[Node]) -> Optional[Node]:
+        """
+        Populate each next pointer to point to its next right node.
+        If there is no next right node, the next pointer should be set to NULL.
+        """
+        if root is None:
+            return root
+
+        queue = deque([root])
+        while queue:
+            size = len(queue)
+            for i in range(size):
+                node = queue.popleft()
+
+                if i < size - 1:
+                    node.next = queue[0]
+                if node.left is not None:
+                    queue.append(node.left)
+                if node.right is not None:
+                    queue.append(node.right)
+
+        return root
+
+    def sumOfLeftLeaves(self, root: Optional[TreeNode]) -> int:
+        """
+        Given the root of a binary tree, return the sum of all left leaves.
+        """
+        lleaves = 0
+
+        def dfs(node: Optional[TreeNode]) -> None:
+            if node is None:
+                return node
+
+            nonlocal lleaves
+            if node.left and node.left.left is None and node.left.right is None:
+                lleaves += node.left.val
+
+            dfs(node.left)
+            dfs(node.right)
+
+        dfs(root)
+        return lleaves
+
+    def isValidBSTNode(node: Optional[TreeNode]) -> bool:
+        left = node.left.val if node.left else float('-inf')
+        right = node.right.val if node.right else float('inf')
+        return left < node.val < right
+
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        """
+        Given the root of a binary tree, determine if it is a valid binary search tree (BST).
+        """
+        path = []
+
+        def dfs(node: Optional[TreeNode]) -> bool:
+            if node is None:
+                return
+
+            dfs(node.left)
+            path.append(node.val)
+            dfs(node.right)
+
+        dfs(root)
+        return all(path[i] < path[i+1] for i in range(len(path) - 1))
+
 
 if __name__ == '__main__':
     '''
+
 
     '''
     s = Solution()
