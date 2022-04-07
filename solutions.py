@@ -1875,7 +1875,6 @@ class Solution:
         l, r = 0, len(nums) - 1
         while l <= r:
             mid = (l + r) // 2
-            print("mid=", nums[mid])
             if nums[mid] == target:
                 return mid
             elif nums[mid] > target:
@@ -1884,6 +1883,57 @@ class Solution:
                 l = mid + 1
         return -1
 
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        """
+        Write an efficient algorithm that searches for a value 
+        target in an m x n integer matrix matrix. 
+        This matrix has the following properties:
+        Integers in each row are sorted from left to right.
+        The first integer of each row is greater than 
+        the last integer of the previous row.
+        """
+        def binary_search(nums: List[int], target: int) -> int:
+            l, r = 0, len(nums) - 1
+            while l <= r:
+                mid = (l + r) // 2
+                if nums[mid] == target:
+                    return True
+                elif nums[mid] > target:
+                    r = mid - 1
+                else:
+                    l = mid + 1
+            return False
+        
+        l, r = 0, len(matrix) - 1
+        while l <= r:
+            mid_row = (l + r) // 2
+            if matrix[mid_row][0] <= target <= matrix[mid_row][-1]:
+                return binary_search(matrix[mid_row], target)
+            elif matrix[mid_row][0] > target:
+                r = mid_row - 1
+            else:
+                l = mid_row + 1
+        return False
+    
+
+    def lastStoneWeight(self, stones: List[int]) -> int:
+        """
+        You are given an array of integers stones where stones[i] is 
+        the weight of the ith stone. We are playing a game with the stones. 
+        On each turn, we choose the heaviest two stones and smash them together. 
+        Suppose the heaviest two stones have weights x and y with x <= y. 
+        The result of this smash is: If x == y, both stones are destroyed, 
+        and If x != y, the stone of weight x is destroyed, 
+        and the stone of weight y has new weight y - x.
+        At the end of the game, there is at most one stone left.
+        Return the smallest possible weight of the left stone. 
+        If there are no stones left, return 0.
+        """
+        while len(stones) > 1:
+            stones.sort()
+            stones.append(stones.pop() - stones.pop()) 
+        return stones[0]
+                
 
 
 
@@ -1891,4 +1941,3 @@ if __name__ == '__main__':
     '''
 
     '''
-    s = Solution()
