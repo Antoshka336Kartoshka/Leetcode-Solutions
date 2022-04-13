@@ -1934,6 +1934,21 @@ class Solution:
             stones.append(stones.pop() - stones.pop()) 
         return stones[0]
                 
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        """
+        Given a positive integer n, generate an n x n matrix filled 
+        with elements from 1 to n2 in spiral order.
+        """
+        A = [[0] * n for _ in range(n)]
+        i, j, di, dj = 0, 0, 0, 1
+        for k in range(n*n):
+            A[i][j] = k + 1
+            print(i, j)
+            if A[(i + di) % n][(j + dj) % n]:
+                di, dj = dj, -di
+            i += di
+            j += dj
+        return A
 
 
 
@@ -1941,3 +1956,5 @@ if __name__ == '__main__':
     '''
 
     '''
+    s = Solution()
+
